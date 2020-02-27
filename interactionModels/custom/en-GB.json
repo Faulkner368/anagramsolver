@@ -1,0 +1,81 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "anagram solver",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "HelloWorldIntent",
+          "slots": [
+            {
+              "name": "characters",
+              "type": "AMAZON.SearchQuery",
+              "samples": [
+                "solve anagram {characters}",
+                "solve {characters}",
+                "letters {characters}"
+              ]
+            }
+          ],
+          "samples": [
+            "solve anagram {characters}",
+            "solve {characters}"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "HelloWorldIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "characters",
+              "type": "AMAZON.SearchQuery",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.1566778719736.576036639098"
+              }
+            }
+          ]
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.1566778719736.576036639098",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "ask me to solve and list the letters in your anagram"
+          },
+          {
+            "type": "PlainText",
+            "value": "List the letters in your anagram"
+          }
+        ]
+      }
+    ]
+  },
+  "version": "9"
+}
