@@ -1,5 +1,29 @@
 {
   "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-GB": {
+          "summary": "Solves Anagrams the user provides to Alexa",
+          "examplePhrases": [
+            "Alexa open hello world",
+            "hello",
+            "help"
+          ],
+          "keywords": [],
+          "name": "Anagram Solver",
+          "smallIconUri": "file://assets/images/en-GB_smallIconUri.png",
+          "description": "",
+          "largeIconUri": "file://assets/images/en-GB_largeIconUri.png"
+        }
+      },
+      "automaticDistribution": {
+        "isActive": false
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Sample Testing Instructions.",
+      "category": "KNOWLEDGE_AND_TRIVIA",
+      "distributionCountries": []
+    },
     "apis": {
       "custom": {
         "endpoint": {
@@ -9,24 +33,10 @@
       }
     },
     "manifestVersion": "1.0",
-    "publishingInformation": {
+    "privacyAndCompliance": {
       "locales": {
-        "en-GB": {
-          "name": "Test Skill",
-          "summary": "Sample Short Description",
-          "description": "Sample Full Description",
-          "examplePhrases": [
-            "Alexa open hello world",
-            "hello",
-            "help"
-          ],
-          "keywords": []
-        }
-      },
-      "isAvailableWorldwide": true,
-      "testingInstructions": "Sample Testing Instructions.",
-      "category": "KNOWLEDGE_AND_TRIVIA",
-      "distributionCountries": []
+        "en-GB": {}
+      }
     }
   }
 }

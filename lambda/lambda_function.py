@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-
-# This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK for Python.
-# Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
-# session persistence, api calls, and more.
-# This sample is built using the handler classes approach in skill builder.
 import logging
 import ask_sdk_core.utils as ask_utils
+import os
+from ask_sdk_s3.adapter import S3Adapter
+s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
 
-from ask_sdk_core.skill_builder import SkillBuilder
+from ask_sdk_core.skill_builder import CustomSkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
@@ -26,9 +23,23 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> bool
 
         return ask_utils.is_request_type("LaunchRequest")(handler_input)
+        
+    def save_solution(self, handler_input):
+        """
+        """
+        
+        try:
+            attributes_manager = handler_input.attributes_manager
+            solution_data = { "solution": "You have not yet given me an anagram to solve" }
+            attributes_manager.persistent_attributes = solution_data
+            attributes_manager.save_persistent_attributes()
+            return True
+        except:
+            return False
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        self.save_solution(handler_input)
         speak_output = "Welcome to anagram solver, ask me to solve, followed by the letters in your anagram"
         reprompt = "Go ahead, say solve and list the letters in your anagram"
 
@@ -45,6 +56,19 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
+        
+    def save_solution(self, handler_input, solution):
+        """
+        """
+        
+        try:
+            attributes_manager = handler_input.attributes_manager
+            solution_data = { "solution": solution }
+            attributes_manager.persistent_attributes = solution_data
+            attributes_manager.save_persistent_attributes()
+            return True
+        except:
+            return False
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -57,12 +81,15 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
         
         if response.status_code != 200:
             speak_output = "Sorry, we were not able to access our dictionary at this time, please try again"
+            self.save_solution(handler_input, speak_output)
         
         if response.status_code == 200 and len(response.json()["solution"]) == 0:
             speak_output = "Sorry, we were not able to find the solution for this anagram, try another"
+            self.save_solution(handler_input, speak_output)
             
         if response.status_code == 200 and len(response.json()["solution"]) > 0:
             speak_output = "We found the following solutions, {}".format(", ".join(response.json()["solution"]))
+            self.save_solution(handler_input, speak_output)
             
         # Save word in persistence
         
@@ -75,6 +102,37 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
                 .response
         )
 
+class RepeatSolutionIntentHandler(AbstractRequestHandler):
+    """Handler for Repeat Solution Intent."""
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("RepeatSolutionIntent")(handler_input)
+            
+    def get_previous_solution(self, handler_input):
+        """
+        """
+        
+        try:
+            attr = handler_input.attributes_manager.persistent_attributes
+            previous_solution = attr["solution"]
+            return previous_solution
+        except:
+            return False
+        
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        
+        previous_solution = self.get_previous_solution(handler_input)
+        
+        speak_output = previous_solution
+
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                # .ask("add a reprompt if you want to keep the session open for the user to respond")
+                .response
+        )
 
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
@@ -84,7 +142,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "You can say hello to me! How can I help?"
+        speak_output = "You can ask me to solve an anagram by saying, solve and then listing each letter or you can say repeat solution to hear an answer again"
 
         return (
             handler_input.response_builder
@@ -176,10 +234,11 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 # defined are included below. The order matters - they're processed top to bottom.
 
 
-sb = SkillBuilder()
+sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(HelloWorldIntentHandler())
+sb.add_request_handler(RepeatSolutionIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())

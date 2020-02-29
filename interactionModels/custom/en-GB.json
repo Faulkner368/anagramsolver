@@ -36,6 +36,17 @@
         {
           "name": "AMAZON.NavigateHomeIntent",
           "samples": []
+        },
+        {
+          "name": "RepeatSolutionIntent",
+          "slots": [],
+          "samples": [
+            "replay solution",
+            "replay answer",
+            "repeat answer",
+            "repeat solution",
+            "repeat"
+          ]
         }
       ],
       "types": []
@@ -77,5 +88,5 @@
       }
     ]
   },
-  "version": "9"
+  "version": "12"
 }
