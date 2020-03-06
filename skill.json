@@ -5,14 +5,18 @@
         "en-GB": {
           "summary": "Solves Anagrams the user provides to Alexa",
           "examplePhrases": [
-            "Alexa open hello world",
-            "hello",
-            "help"
+            "Alexa anagram solver"
           ],
-          "keywords": [],
+          "keywords": [
+            "anagram",
+            "solver",
+            "word",
+            "games",
+            "scrabble"
+          ],
           "name": "Anagram Solver",
           "smallIconUri": "file://assets/images/en-GB_smallIconUri.png",
-          "description": "",
+          "description": "The user provides Alexa with an anagram and the alexa skill accesses an anagram solver API endpoint and returns the result to the user, which may be a list of possible words, one word or no words if it wasn\u0027t able to solve the anagram.\n\nThe user can also ask alexa to repeat solution, and it will replay the solution. However, you must have given it a anagram to solve before you can use repeat solution.",
           "largeIconUri": "file://assets/images/en-GB_largeIconUri.png"
         }
       },
@@ -20,23 +24,28 @@
         "isActive": false
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "Sample Testing Instructions.",
+      "testingInstructions": "1. Alexa Anagram Solver\n2. solve r i e e v w\n3. repeat solution",
       "category": "KNOWLEDGE_AND_TRIVIA",
       "distributionCountries": []
     },
     "apis": {
       "custom": {
         "endpoint": {
-          "uri": "arn:aws:lambda:us-east-1:728097415463:function:23c70274-a020-4070-ab70-9e5b26b8edca:Release_0"
+          "uri": "arn:aws:lambda:us-east-1:728097415463:function:23c70274-a020-4070-ab70-9e5b26b8edca:Release_1"
         },
         "interfaces": []
       }
     },
     "manifestVersion": "1.0",
     "privacyAndCompliance": {
+      "allowsPurchases": false,
       "locales": {
         "en-GB": {}
-      }
+      },
+      "isExportCompliant": true,
+      "containsAds": false,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
     }
   }
 }

@@ -16,7 +16,7 @@
           "samples": []
         },
         {
-          "name": "HelloWorldIntent",
+          "name": "AnagramSolverIntent",
           "slots": [
             {
               "name": "characters",
@@ -54,7 +54,7 @@
     "dialog": {
       "intents": [
         {
-          "name": "HelloWorldIntent",
+          "name": "AnagramSolverIntent",
           "confirmationRequired": false,
           "prompts": {},
           "slots": [
@@ -88,5 +88,5 @@
       }
     ]
   },
-  "version": "12"
+  "version": "14"
 }

@@ -12,6 +12,7 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
 
 import requests
+import configparser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -51,11 +52,11 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
 
 
-class HelloWorldIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
+class AnagramSolverIntentHandler(AbstractRequestHandler):
+    """Handler for Anagram Solver Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
+        return ask_utils.is_intent_name("AnagramSolverIntent")(handler_input)
         
     def save_solution(self, handler_input, solution):
         """
@@ -74,10 +75,20 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         
         slots = handler_input.request_envelope.request.intent.slots
-        anagram = slots["characters"].value.replace(" ", "")
+        anagram = slots["characters"].value.replace(" ", "").lower()
         
-        url = "http://88.106.119.216:5001/anagram/?anagram={}".format(anagram)
-        response = requests.get(url)
+        
+        conf = configparser.ConfigParser()
+        conf.read('conf.ini')
+
+        aws_gateway_section = conf["aws_gateway_api_auth"]
+        anagram_solver_endpoint = aws_gateway_section["anagram_solver_endpoint"]
+        api_key = aws_gateway_section["api_key"]
+        
+        
+        url = "{endpoint}?anagram={anagram}".format(endpoint=anagram_solver_endpoint, anagram=anagram)
+        headers={"x-api-key": api_key}
+        response = requests.get(url, headers=headers)
         
         if response.status_code != 200:
             speak_output = "Sorry, we were not able to access our dictionary at this time, please try again"
@@ -88,12 +99,8 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
             self.save_solution(handler_input, speak_output)
             
         if response.status_code == 200 and len(response.json()["solution"]) > 0:
-            speak_output = "We found the following solutions, {}".format(", ".join(response.json()["solution"]))
+            speak_output = "<speak>We found the following solutions, {}</speak>".format(', <break time="1s"/>'.join(response.json()["solution"]))
             self.save_solution(handler_input, speak_output)
-            
-        # Save word in persistence
-        
-        # If use repeat word intent access word in persistence
 
         return (
             handler_input.response_builder
@@ -237,7 +244,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(HelloWorldIntentHandler())
+sb.add_request_handler(AnagramSolverIntentHandler())
 sb.add_request_handler(RepeatSolutionIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
